@@ -30,4 +30,24 @@ app.post('/api/register', (req, res) => {
   });
 });
 
+// AUTH-5: Kullanıcı Giriş (Login) API
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'E-posta ve şifre zorunludur.' });
+  }
+
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) {
+    return res.status(401).json({ message: 'Geçersiz e-posta veya şifre.' });
+  }
+
+  return res.status(200).json({
+    message: 'Giriş başarılı.',
+    token: `mock-jwt-token-${user.id}`,
+    user: { id: user.id, username: user.username, email: user.email }
+  });
+});
+
 module.exports = app;
