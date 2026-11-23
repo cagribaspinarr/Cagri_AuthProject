@@ -50,4 +50,33 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// AUTH-6: Şifre Sıfırlama API
+app.post('/api/reset-password', (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).json({ message: 'E-posta ve yeni şifre zorunludur.' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: 'Yeni şifre en az 6 karakter olmalıdır.' });
+  }
+
+  const user = users.find(u => u.email === email);
+  if (!user) {
+    return res.status(404).json({ message: 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.' });
+  }
+
+  user.password = newPassword;
+
+  return res.status(200).json({
+    message: 'Şifre başarıyla güncellendi.'
+  });
+});
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Sunucu ${PORT} portunda çalışıyor.`));
+}
+
 module.exports = app;
